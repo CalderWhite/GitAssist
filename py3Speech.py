@@ -102,9 +102,9 @@ class ArtificialIntelligence(object):
                 pass
 def main():
         jarvis = ArtificialIntelligence(1,"Jarvis","Calder","gitpanion_api","Sir")
-        jarvis.assistance_package.init(jarvis)
-        jarvis.fast_assist("hey jarvis save this")
-        #jarvis.run()
+        #jarvis.assistance_package.init(jarvis)
+        #jarvis.fast_assist("hey jarvis save this")
+        jarvis.run()
 
 if __name__ == '__main__':
         main()
