@@ -158,7 +158,8 @@ def get_prev_project():
                 return j["that"]
         else:
                 # default to the current project
-                return None
+                return j["this"]
+                # return None
 def local_to_github_upload(pkg,bot):
         """the package (the only required positional argument) must have the name of the repo, and the path to the file in a dictionary such as this:\n{\n      "name" : <repo name>,\n         "path" : <local file path>\n}"""
         github_path = pkg["path"][pkg["path"].find(pkg["name"]) + len(pkg["name"]) + 1 : ]
@@ -201,9 +202,27 @@ def start_dir_upload(project,bot):
 ###############################
 #       github functions      #
 ###############################
-def upload_folder(pkg,bot):
+def upload_folder(pkg,bot,keywords):
+        for i in keywords:
+                pkg[i] = keywords[i]
+        if pkg.__contains__("branch") == False:
+                pkg["branch"] = "master"
         start_dir_upload(pkg,bot)
         pass
+def find_words(text):
+        pkg = {}
+        textarr = text.split(" ")
+        if text.find("branch") > -1:
+                global noerr
+                noerr = True
+                try:
+                        textarr[textarr.index("branch") - 1]
+                except:
+                        noerr = False
+                if noerr:
+                        pkg["branch"] = textarr[textarr.index("branch") - 1]
+        # -----------------
+        return pkg
 ###############################
 #         if callbacks        #
 ###############################
@@ -216,10 +235,15 @@ def back_up_prev_cb(text,bot):
                         bot.say("Sir, I'm not quite sure what project you're talking about.")
                 else:
                         # now user the current project
-                        bot.say("I'll remember that.")
+                        #bot.say("I'll remember that.")
                         remember_current_project(project)
+                        # -----------------------------
+                        key_words = find_words(text)
+                        upload_folder(get_prev_project(),bot,key_words)
         else:
-                bot.say("I know what you're talking about, but the feature isn't implimented at this time.")
+                #bot.say("I know what you're talking about, but the feature isn't implimented at this time.")
+                key_words = find_words(text)
+                upload_folder(get_prev_project(),bot,key_words)
         pass
 def back_up_curr_cb(text,bot):
         bot.say("Right away " + bot.pronoun)
@@ -228,13 +252,16 @@ def back_up_curr_cb(text,bot):
         if project == None:
                 bot.say("Sir, I'm not quite sure what project you're talking about.")
         else:
-                if text.find("branch") > -1:
-                                bot.say("not implimented")
-                                print("not implimented")
-                else:
-                        project["branch"] = "master"
-                        remember_current_project(project)
-                        upload_folder(project,bot)
+                key_words = find_words(text)
+                remember_current_project(project)
+                #if text.find("branch") > -1:
+                #                bot.say("not implimented")
+                #                print("not implimented")
+                #else:
+                #        project["branch"] = "master"
+                #        remember_current_project(project)
+                #        upload_folder(project,bot)
+                upload_folder(project,bot,key_words)
         pass
 ###############################
 #           if list           #
